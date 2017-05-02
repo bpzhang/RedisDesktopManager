@@ -1,21 +1,22 @@
 #pragma once
-#include "treeitem.h"
-#include "connections-tree/operations.h"
+#include "abstractnamespaceitem.h"
 
-namespace ConnectionsTree {
+namespace ConnectionsTree {        
 
-    class NamespaceItem : public TreeItem
-    {
+    class NamespaceItem : public QObject, public AbstractNamespaceItem
+    {        
+        Q_OBJECT
     public:
-        NamespaceItem(const QString& fullPath,  QSharedPointer<Operations> operations, QWeakPointer<TreeItem> parent);
+        NamespaceItem(const QString& fullPath,
+                      QSharedPointer<Operations> operations,
+                      QWeakPointer<TreeItem> parent,
+                      Model& model,
+                      const KeysTreeRenderer::RenderingSettigns& settings);
 
         QString getDisplayName() const override;
-        QString getName() const;
-        QIcon getIcon() const override;
-        QList<QSharedPointer<TreeItem>> getAllChilds() const override;
-        uint childCount(bool recursive = false) const override;
-        QSharedPointer<TreeItem> child(uint row) const override;
-        QWeakPointer<TreeItem> parent() const override;
+        QString getName() const override;
+        QByteArray getFullPath() const override;
+        QIcon getIcon() const override;       
 
         bool onClick(ParentView& treeView) override;
         QSharedPointer<QMenu> getContextMenu(ParentView& treeView) override;
@@ -23,17 +24,15 @@ namespace ConnectionsTree {
         bool isLocked() const override;
         bool isEnabled() const override;
 
-        void append(QSharedPointer<TreeItem> item);
+        void notifyModel() override;
 
-        QSharedPointer<NamespaceItem> findChildNamespace(const QString& name);
+        int getDbIndex() const;
+
+        void setRemoved();
 
     private:
-        QString m_fullPath;
-        QString m_displayName;
-        QSharedPointer<Operations> m_operations;
-        QWeakPointer<TreeItem> m_parent;
-        bool m_locked;
-        QList<QSharedPointer<TreeItem>> m_childItems;
-        QHash<QString, QSharedPointer<NamespaceItem>> m_childNamespaces;
+        QString m_fullPath;        
+        QString m_displayName;                           
+        bool m_removed;        
     };
 }

@@ -11,8 +11,8 @@ TEMPLATE = app
 
 # Skip version file
 !exists( $$PWD/version.h ) {    
-    DEFINES += RDM_VERSION=\\\"0.8.4-dev\\\"
-    message("Version: 0.8.4-dev")
+    DEFINES += RDM_VERSION=\\\"0.8.8-dev\\\"
+    message("Version: 0.8.8-dev")
 }
 
 DEFINES += CORE_LIBRARY ELPP_QT_LOGGING ELPP_STL_LOGGING ELPP_DISABLE_DEFAULT_CRASH_HANDLING
@@ -29,6 +29,7 @@ SOURCES += \
     $$PWD/modules/value-editor/*.cpp \
     $$PWD/modules/crashhandler/*.cpp \
     $$PWD/modules/updater/*.cpp \
+    $$PWD/modules/bulk-operations/*.cpp \
 
 HEADERS  += \
     $$PWD/app/dialogs/*.h \
@@ -42,6 +43,7 @@ HEADERS  += \
     $$PWD/modules/crashhandler/*.h \
     $$PWD/modules/updater/*.h \
     $$PWD/modules/*.h \    
+    $$PWD/modules/bulk-operations/*.h \
 
 exists( $$PWD/version.h ) {
     HEADERS  += $$PWD/version.h
@@ -56,8 +58,11 @@ include($$THIRDPARTYDIR/3rdparty.pri)
 
 win32 {
     CONFIG += c++11
-    LIBS += -lws2_32 -lkernel32 -luser32 -lshell32 -luuid -lole32 -ladvapi32
     RC_FILE += $$PWD/resources/rdm.rc
+
+    win32-msvc* {
+        QMAKE_LFLAGS += /LARGEADDRESSAWARE
+    }
 
     release: DESTDIR = ./../bin/windows/release
     debug:   DESTDIR = ./../bin/windows/debug
